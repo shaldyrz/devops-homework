@@ -1,34 +1,37 @@
-.PHONY: help up down rollout fault-injection load-test
+.PHONY: help gke-up gke-down rollout fault-injection load-test
 
 help:
 	@echo "Available commands:"
-	@echo "  make up              - Provision Kind cluster, configure namespaces, and bootstrap ArgoCD"
-	@echo "  make down            - Destroy the Kind cluster and clean up state"
+	@echo "  make gke-up          - Provision GKE modular infrastructure (VPC, Subnet, GKE, LB) and bootstrap ArgoCD"
+	@echo "  make gke-down        - Destroy GKE and all cloud resources on GCP"
 	@echo "  make rollout         - Run rollout demo"
 	@echo "  make fault-injection - Run fault injection demo"
 	@echo "  make load-test       - Run load test demo"
 
-up:
-	@echo "=== Step 1: Provisioning Kind Cluster via Terragrunt ==="
-	cd infra/k8s-cluster && terragrunt apply --terragrunt-non-interactive
+gke-up:
+	@echo "=== Step 1: Provisioning GCP Infrastructure via Terragrunt run --all ==="
+	cd infra/resources && terragrunt run --all apply --non-interactive
 
-	@echo "=== Step 2: Creating Kubernetes Namespaces ==="
+	@echo "=== Step 2: Registering GKE Kubeconfig Credentials ==="
+	gcloud container clusters get-credentials interopera-gke-cluster --region asia-southeast2 --project ambient-stone-281407
+
+	@echo "=== Step 3: Creating Kubernetes Namespaces ==="
 	kubectl create namespace argocd || true
 	kubectl create namespace monitoring || true
 
-	@echo "=== Step 3: Installing ArgoCD via Helm ==="
+	@echo "=== Step 4: Installing ArgoCD via Helm ==="
 	helm repo add argo https://argoproj.github.io/argo-helm || true
 	helm repo update argo
 	helm upgrade --install argocd argo/argo-cd --namespace argocd -f deploy/argocd/values.yaml
 
-	@echo "=== Step 4: Waiting for ArgoCD Server to be Ready ==="
+	@echo "=== Step 5: Waiting for ArgoCD Server to be Ready ==="
 	kubectl rollout status deployment/argocd-server -n argocd --timeout=300s
 
-	@echo "=== Bootstrap Completed Successfully ==="
+	@echo "=== GKE Bootstrap Completed Successfully ==="
 
-down:
-	@echo "=== Tearing Down Kind Cluster ==="
-	cd infra/k8s-cluster && terragrunt destroy --terragrunt-non-interactive
+gke-down:
+	@echo "=== Tearing Down GCP Infrastructure via Terragrunt run --all ==="
+	cd infra/resources && terragrunt run --all destroy --non-interactive
 
 rollout:
 	@echo "Running rollout..."
