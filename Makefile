@@ -13,11 +13,12 @@ gke-up:
 	cd infra/resources && terragrunt run --all apply --non-interactive
 
 	@echo "=== Step 2: Registering GKE Kubeconfig Credentials ==="
-	gcloud container clusters get-credentials interopera-gke-cluster --region asia-southeast2 --project ambient-stone-281407
+	gcloud container clusters get-credentials interopera-gke-cluster --zone asia-southeast2-a --project ambient-stone-281407 --dns-endpoint
 
 	@echo "=== Step 3: Creating Kubernetes Namespaces ==="
 	kubectl create namespace argocd || true
 	kubectl create namespace monitoring || true
+	kubectl create namespace development || true
 
 	@echo "=== Step 4: Installing ArgoCD via Helm ==="
 	helm repo add argo https://argoproj.github.io/argo-helm || true
@@ -26,7 +27,6 @@ gke-up:
 
 	@echo "=== Step 5: Waiting for ArgoCD Server to be Ready ==="
 	kubectl rollout status deployment/argocd-server -n argocd --timeout=300s
-
 	@echo "=== GKE Bootstrap Completed Successfully ==="
 
 gke-down:
