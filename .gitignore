@@ -1,0 +1,17 @@
+# Terraform & Terragrunt ignores
+.terraform/
+.terragrunt-cache/
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+.terraform.lock.hcl
+
+# Local env files / secrets
+.env
+.env.*
+*.tfvars
+*.tfvars.json
+
+# OS specific files
+.DS_Store
+Thumbs.db
