@@ -2,6 +2,7 @@
 # Ref: https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-k8s-stack
 
 victoria-metrics-k8s-stack:
+  fullnameOverride: "vm-k8s"
   vmsingle:
     enabled: true
     spec:
