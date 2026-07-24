@@ -28,6 +28,27 @@ resource "google_compute_network" "vpc" {
   auto_create_subnetworks = false
 }
 
+# Cloud Router (required for Cloud NAT)
+resource "google_compute_router" "router" {
+  name    = "interopera-gke-router"
+  region  = var.region
+  network = google_compute_network.vpc.id
+}
+
+# Cloud NAT (allows GKE private nodes to download Docker images from the internet)
+resource "google_compute_router_nat" "nat" {
+  name                               = "interopera-gke-nat"
+  router                             = google_compute_router.router.name
+  region                             = var.region
+  nat_ip_allocate_option             = "AUTO_ONLY"
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+
+  log_config {
+    enable = true
+    filter = "ERRORS_ONLY"
+  }
+}
+
 output "vpc_id" {
   value       = google_compute_network.vpc.id
   description = "The ID of the created VPC"

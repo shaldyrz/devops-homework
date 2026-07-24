@@ -1,9 +1,5 @@
 # Helm values configuration for ArgoCD (argo-cd chart)
 
-global:
-  image:
-    tag: "v2.10.4" # Pin the ArgoCD image version
-
 server:
   extraArgs:
     - --insecure # Disable HTTPS for local development loop behind ingress
