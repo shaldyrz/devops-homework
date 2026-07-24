@@ -19,6 +19,7 @@ victoria-metrics-k8s-stack:
         runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 3000
+        fsGroup: 3000
 
   vmagent:
     enabled: true
@@ -37,3 +38,4 @@ victoria-metrics-k8s-stack:
         runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 3000
+        fsGroup: 3000
