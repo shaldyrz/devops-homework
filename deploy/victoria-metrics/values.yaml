@@ -1,0 +1,39 @@
+# Helm values configuration overriding the VictoriaMetrics K8s Stack sub-chart settings
+# Ref: https://github.com/VictoriaMetrics/helm-charts/tree/master/charts/victoria-metrics-k8s-stack
+
+victoria-metrics-k8s-stack:
+  vmsingle:
+    enabled: true
+    spec:
+      replicaCount: 1
+      image:
+        tag: "v1.99.0" # Pinned image version
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "256Mi"
+        limits:
+          cpu: "500m"
+          memory: "512Mi"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 3000
+
+  vmagent:
+    enabled: true
+    spec:
+      replicaCount: 1
+      image:
+        tag: "v1.99.0" # Pinned image version
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
+        limits:
+          cpu: "300m"
+          memory: "256Mi"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 3000

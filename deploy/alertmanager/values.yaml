@@ -1,0 +1,35 @@
+# Helm values configuration overriding the Alertmanager sub-chart settings
+# Ref: https://github.com/prometheus-community/helm-charts/tree/main/charts/alertmanager
+
+alertmanager:
+  image:
+    repository: prom/alertmanager
+    tag: "v0.27.0" # Pinned image version
+    pullPolicy: IfNotPresent
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+    fsGroup: 65534
+
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "100m"
+      memory: "128Mi"
+
+  # Config overrides for alerting routes
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      receiver: 'default-receiver'
+    receivers:
+      - name: 'default-receiver'
