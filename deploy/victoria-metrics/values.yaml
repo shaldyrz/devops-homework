@@ -5,7 +5,7 @@ victoria-metrics-k8s-stack:
   fullnameOverride: "vm-k8s"
   grafana:
     enabled: false # Disable the bundled Grafana to avoid duplicates
-  vmalertmanager:
+  alertmanager:
     enabled: false # Disable the bundled Alertmanager to avoid duplicates
   vmsingle:
     enabled: true
