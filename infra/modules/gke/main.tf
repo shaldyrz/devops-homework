@@ -37,6 +37,12 @@ resource "google_container_cluster" "primary" {
     master_ipv4_cidr_block  = "172.16.0.0/28"
   }
 
+  # Configure the temporary default node pool to use standard disks to avoid SSD quota limits
+  node_config {
+    disk_type    = "pd-standard"
+    disk_size_gb = 30
+  }
+
   # Allow clean deletion via terraform destroy
   deletion_protection = false
 }
@@ -51,6 +57,10 @@ resource "google_container_node_pool" "spot_nodes" {
   node_config {
     spot         = true
     machine_type = "e2-medium"
+
+    # Configure custom node pool to use standard disks to avoid SSD quota limits
+    disk_type    = "pd-standard"
+    disk_size_gb = 30
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
