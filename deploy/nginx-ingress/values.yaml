@@ -10,6 +10,7 @@ ingress-nginx:
       controllerValue: "k8s.io/ingress-nginx-external"
     ingressClass: "external-ingress"
     service:
-      annotations:
-        networking.gke.io/address: "external-ingress" # Reference static IP by GCP resource name
+      type: LoadBalancer
+      loadBalancerIP: "34.101.112.48"
+
 

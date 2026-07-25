@@ -10,10 +10,8 @@ server:
   ingress:
     enabled: true
     ingressClassName: "external-ingress"
-    hosts:
-      - argocd.srzlab.tech
-    paths:
-      - /
+    hostname: "argocd.srzlab.tech"
+    path: /
 
 configs:
   params:
