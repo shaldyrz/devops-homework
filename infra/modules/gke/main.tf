@@ -60,6 +60,13 @@ resource "google_container_cluster" "primary" {
 
   # Allow clean deletion via terraform destroy
   deletion_protection = false
+
+  # Ignore changes to default node_config to prevent recreation loops
+  lifecycle {
+    ignore_changes = [
+      node_config,
+    ]
+  }
 }
 
 # Cost-optimized GKE Spot Node Pool (1 node total in a single zone)
