@@ -32,3 +32,9 @@ grafana:
     hosts:
       - grafana.srzlab.tech
     path: /
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-srzlab-tech"
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana.srzlab.tech

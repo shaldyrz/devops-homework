@@ -12,6 +12,9 @@ server:
     ingressClassName: "external-ingress"
     hostname: "argocd.srzlab.tech"
     path: /
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-srzlab-tech"
+    tls: true
 
 configs:
   params:
