@@ -1,0 +1,15 @@
+# Helm values configuration overriding the ingress-nginx sub-chart settings
+# Ref: https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx
+
+ingress-nginx:
+  controller:
+    ingressClassResource:
+      name: "external-ingress"
+      enabled: true
+      default: false
+      controllerValue: "k8s.io/ingress-nginx-external"
+    ingressClass: "external-ingress"
+    service:
+      annotations:
+        networking.gke.io/address: "external-ingress" # Reference static IP by GCP resource name
+
