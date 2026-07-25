@@ -25,3 +25,10 @@ grafana:
     existingSecret: "grafana-admin-credentials"
     userKey: admin-user
     passwordKey: admin-password
+
+  ingress:
+    enabled: true
+    ingressClassName: "external-ingress"
+    hosts:
+      - grafana.srzlab.tech
+    path: /
