@@ -308,7 +308,7 @@
               "uid": "VictoriaMetrics"
             },
             "editorMode": "code",
-            "expr": "sum(kube_horizontalpodautoscaler_status_current_replicas{namespace=\"development\"}) by (horizontalpodautoscaler)",
+            "expr": "sum(kube_horizontalpodautoscaler_status_current_replicas{exported_namespace=\"development\"}) by (horizontalpodautoscaler)",
             "legendFormat": "{{horizontalpodautoscaler}} - Current Replicas",
             "range": true,
             "refId": "A"
@@ -319,7 +319,7 @@
               "uid": "VictoriaMetrics"
             },
             "editorMode": "code",
-            "expr": "sum(kube_horizontalpodautoscaler_status_desired_replicas{namespace=\"development\"}) by (horizontalpodautoscaler)",
+            "expr": "sum(kube_horizontalpodautoscaler_status_desired_replicas{exported_namespace=\"development\"}) by (horizontalpodautoscaler)",
             "legendFormat": "{{horizontalpodautoscaler}} - Desired Replicas",
             "range": true,
             "refId": "B"
