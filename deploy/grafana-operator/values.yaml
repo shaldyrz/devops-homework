@@ -1,0 +1,6 @@
+# Default values override for grafana-operator
+# Ref: https://github.com/grafana/grafana-operator/tree/master/charts/grafana-operator
+
+grafana-operator:
+  # Defaults are production ready
+  enabled: true

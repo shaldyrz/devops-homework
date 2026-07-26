@@ -1,0 +1,10 @@
+apiVersion: v2
+name: grafana-operator-wrapper
+description: Wrapper Chart for Grafana Operator
+type: application
+version: 1.0.0
+appVersion: "5.24.0"
+dependencies:
+  - name: grafana-operator
+    version: 5.24.0
+    repository: https://grafana-operator.github.io/grafana-operator/charts
