@@ -1,4 +1,4 @@
-.PHONY: help gke-up gke-down rollout fault-injection load-test
+.PHONY: help gke-up gke-down rollout inject-fault clear-fault load-test eval-gate
 
 help:
 	@echo "Available commands:"
@@ -34,10 +34,34 @@ gke-down:
 	cd infra/resources && terragrunt run --all destroy --non-interactive
 
 rollout:
-	@echo "Running rollout..."
+	@echo "=== Checking GitOps Sync Status ==="
+	kubectl get applications -n argocd
+	@echo "=== Rollout status of Development namespace deployments ==="
+	kubectl rollout status deployment/gateway -n development --timeout=90s
+	kubectl rollout status deployment/rag-api -n development --timeout=90s
+	kubectl rollout status deployment/model-server -n development --timeout=90s
 
-fault-injection:
-	@echo "Injecting faults..."
+inject-fault:
+	@echo "=== Port-forwarding Private Model Server ==="
+	kubectl port-forward svc/model-server 8001:8001 -n development > /dev/null & PID=$$!; \
+	sleep 2; \
+	echo "=== Injecting 30% Error Rate Fault ==="; \
+	curl -X POST http://localhost:8001/admin/fault -H "Content-Type: application/json" -d '{"mode": "error", "rate": 0.3}'; \
+	kill $$PID
+
+clear-fault:
+	@echo "=== Port-forwarding Private Model Server ==="
+	kubectl port-forward svc/model-server 8001:8001 -n development > /dev/null & PID=$$!; \
+	sleep 2; \
+	echo "=== Clearing Faults ==="; \
+	curl -X POST http://localhost:8001/admin/fault -H "Content-Type: application/json" -d '{"mode": "off"}'; \
+	kill $$PID
 
 load-test:
-	@echo "Running load test..."
+	@echo "=== Running Concurrency Load Test ==="
+	python3 loadgen/loadgen.py --url https://gateway.srzlab.tech --concurrency 8 --duration 30 --prompts eval/eval_set.jsonl
+
+eval-gate:
+	@echo "=== Running Evaluation Gate ==="
+	python3 eval/eval_gate.py --url https://gateway.srzlab.tech --eval-set eval/eval_set.jsonl
+

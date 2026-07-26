@@ -1,0 +1,64 @@
+logging {
+  level = "info"
+}
+
+// Discover all pods in the cluster
+discovery.kubernetes "pods" {
+  role = "pod"
+}
+
+// Filter and label target pods
+discovery.relabel "pods" {
+  targets = discovery.kubernetes.pods.targets
+
+  // Only keep targets in development and monitoring namespaces
+  rule {
+    source_labels = ["__meta_kubernetes_namespace"]
+    regex         = "development|monitoring"
+    action        = "keep"
+  }
+
+  // Keep gateway, model-server, rag-api, and kube-state-metrics pods
+  rule {
+    source_labels = [
+      "__meta_kubernetes_pod_label_app",
+      "__meta_kubernetes_pod_label_app_kubernetes_io_name",
+      "__meta_kubernetes_pod_container_port_name"
+    ]
+    regex         = "(gateway;.*;http)|(model-server;.*;http)|(rag-api;.*;http)|(.*;kube-state-metrics;http-metrics)"
+    action        = "keep"
+  }
+
+  // Map namespace to a standard label
+  rule {
+    source_labels = ["__meta_kubernetes_namespace"]
+    target_label  = "namespace"
+  }
+
+  // Map the app label to job label
+  rule {
+    source_labels = ["__meta_kubernetes_pod_label_app"]
+    target_label  = "job"
+  }
+
+  // For kube-state-metrics, map its name to job
+  rule {
+    source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+    regex         = "kube-state-metrics"
+    target_label  = "job"
+    replacement   = "kube-state-metrics"
+  }
+}
+
+// Scrape metrics from the filtered pods
+prometheus.scrape "metrics" {
+  targets    = discovery.relabel.pods.output
+  forward_to = [prometheus.remote_write.vm.receiver]
+}
+
+// Remote write to local Victoria Metrics Single
+prometheus.remote_write "vm" {
+  endpoint {
+    url = "http://vmsingle-vm-k8s.monitoring.svc:8429/api/v1/write"
+  }
+}
