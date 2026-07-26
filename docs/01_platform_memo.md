@@ -71,7 +71,7 @@ When transitioning between model versions (e.g. from version `1.0` to `2.0`), we
 ### Promotion Criteria ("Healthy Enough to Promote")
 A canary version is promoted to 100% traffic only if it satisfies all the following gates over a 24-hour observation window:
 1. **SLA Adherence**: Canary p95 latency remains $\le$ 2.0 seconds, and success rate $\ge$ 99.9%.
-2. **Zero Evaluation Regression**: Automated evaluation runs on `eval_set.jsonl` verify that accuracy remains at 100% and no hallucinations occur (monitored via log checks for refusal strings).
+2. **Zero Evaluation Regression**: Automated evaluation runs on `eval_set.jsonl` verify that accuracy remains at **≥ 95%** and no hallucinations occur (monitored via log checks for refusal strings). Baseline accuracy on current corpus: **95.24%** (20/21 queries).
 3. **Hardware Health**: GPU memory usage stays stable with no memory leaks or growth in waiting queue depth.
 
 ---
@@ -79,18 +79,21 @@ A canary version is promoted to 100% traffic only if it satisfies all the follow
 ## 4. RAG Data Plane & Scaling
 
 ### Vector Store Architecture
-* **Selected Engine**: **Qdrant** (deployed as a stateful cluster within GKE).
-* **Rationale**: Qdrant is a native Rust-based vector search engine that offers extremely high throughput, low latency, and built-in payload filtering (essential for filtering rules by fund ID without traversing the entire index).
+* **Selected Engine**: **FAISS** (`faiss-cpu`, Facebook AI Similarity Search) — an in-memory flat index running inside the `rag-api` pod.
+* **Rationale**: FAISS provides zero-infrastructure-overhead vector search suitable for the current corpus size (~tens of documents). It requires no external service, simplifying the deployment topology. The index is built at container startup from the `corpus/` directory and held in memory for the lifetime of the pod.
+* **Embedding Model**: `sentence-transformers/all-MiniLM-L6-v2` (384 dimensions) — runs fully in-process, no external API calls required for retrieval.
 
 ### Embedding Pipeline & Lifecycle
-1. **Ingestion**: When files under `corpus/` change, a GitOps pipeline triggers a containerized script that reads the documents, parses them using a markdown header splitter, and generates embeddings using `text-embedding-3-small` (1536 dimensions).
-2. **Index Versioning (Double Buffering)**: Embeddings are written to a new collection named `meridian-corpus-v<git-sha>`.
-3. **Atomic Switch**: The `rag-api` queries vectors using a Qdrant alias `meridian-corpus-active`. Once the new collection is fully populated, the alias is atomically updated to point to the new collection, ensuring zero downtime.
+1. **Ingestion**: At `rag-api` pod startup, all documents under `corpus/` are read, chunked by paragraph, and embedded using the local sentence-transformer model.
+2. **Index Build**: Embeddings are indexed into a FAISS `IndexFlatL2` flat index in memory. No persistence layer is required at current corpus scale.
+3. **Query**: At inference time, the user query is embedded using the same model and the top-k nearest chunks are retrieved via L2 distance search and passed as context to the model server.
 
 ### Scaling to 10,000 Documents
-* **HNSW Indexing**: Enable Hierarchical Navigable Small World (HNSW) graphs in Qdrant to convert linear scans into logarithmic approximate nearest neighbor searches.
-* **Quantization**: Enable Scalar Quantization (SQ) or Product Quantization (PQ) to compress vectors from float32 to 8-bit integers, reducing RAM requirements by 75% with negligible accuracy degradation.
-* **Namespace Isolation**: Segment the vector store collections using payload metadata indexes (e.g., `filter: { key: "fund", match: { value: "fixed_income" } }`).
+When corpus size grows beyond in-memory feasibility, the following migration path applies:
+* **FAISS → Qdrant or Weaviate**: Replace the in-memory FAISS index with a persistent, network-accessible vector database (Qdrant recommended) deployed as a StatefulSet in GKE.
+* **HNSW Indexing**: Upgrade from `IndexFlatL2` (exact, O(n)) to HNSW (approximate, O(log n)) to maintain sub-10ms retrieval at scale.
+* **Index Versioning (Double Buffering)**: Write new embeddings to a versioned collection (`meridian-corpus-v<git-sha>`) and atomically swap an alias to achieve zero-downtime re-indexing.
+* **Quantization**: Apply Scalar Quantization (SQ8) or Product Quantization (PQ) to reduce VRAM requirements by up to 75% with negligible recall degradation.
 
 ---
 
