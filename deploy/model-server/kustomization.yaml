@@ -10,4 +10,4 @@ resources:
 images:
 - name: asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server
   newName: asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server
-  newTag: f30f8b774e418ab5e945f08e3aa9575e7bd67dc2
+  newTag: eb6a57bfdc5d61e386001e76c1300f925cc994ab
