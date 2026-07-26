@@ -21,7 +21,7 @@ discovery.relabel "pods" {
   // Keep gateway, model-server, rag-api, and kube-state-metrics pods
   rule {
     source_labels = ["__meta_kubernetes_pod_label_app", "__meta_kubernetes_pod_label_app_kubernetes_io_name", "__meta_kubernetes_pod_container_port_name"]
-    regex         = "(gateway;.*;http)|(model-server;.*;http)|(rag-api;.*;http)|(.*;kube-state-metrics;http-metrics)"
+    regex         = "(gateway;.*;http)|(model-server;.*;http)|(rag-api;.*;http)|(.*;kube-state-metrics;http-metrics)|(.*;prometheus-node-exporter;metrics)"
     action        = "keep"
   }
 
@@ -43,6 +43,14 @@ discovery.relabel "pods" {
     regex         = "kube-state-metrics"
     target_label  = "job"
     replacement   = "kube-state-metrics"
+  }
+
+  // For node-exporter, map its name to job
+  rule {
+    source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+    regex         = "prometheus-node-exporter"
+    target_label  = "job"
+    replacement   = "node-exporter"
   }
 }
 
