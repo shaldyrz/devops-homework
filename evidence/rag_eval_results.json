@@ -1,0 +1,198 @@
+{
+  "timestamp": "2026-07-26T17:39:44Z",
+  "target_url": "https://gateway.srzlab.tech",
+  "total_queries": 21,
+  "passed_queries": 20,
+  "accuracy_pct": 95.23809523809523,
+  "results": [
+    {
+      "id": 1,
+      "prompt": "What is the base currency of the Meridian Fixed Income Fund?",
+      "expected": "The base currency of the Meridian Fixed Income Fund is the Singapore dollar (SGD).",
+      "got": "The base currency of the Meridian Fixed Income Fund is the Singapore dollar (SGD).",
+      "status_code": 200,
+      "latency_sec": 0.611877707997337,
+      "correct": true
+    },
+    {
+      "id": 2,
+      "prompt": "Which regulator supervises the Meridian Fixed Income Fund?",
+      "expected": "The fund is supervised by the Monetary Authority of Singapore (MAS).",
+      "got": "The fund is supervised by the Monetary Authority of Singapore (MAS).",
+      "status_code": 200,
+      "latency_sec": 0.5180997909919824,
+      "correct": true
+    },
+    {
+      "id": 3,
+      "prompt": "What is the maximum allocation to high yield bonds in the Meridian Fixed Income Fund?",
+      "expected": "High yield bonds are capped at 15% of the fund's net asset value.",
+      "got": "High yield bonds are capped at 15% of the fund's net asset value.",
+      "status_code": 200,
+      "latency_sec": 0.5792068340233527,
+      "correct": true
+    },
+    {
+      "id": 4,
+      "prompt": "What is the minimum allocation to investment grade corporate bonds?",
+      "expected": "Investment grade corporate bonds must make up at least 40% of the portfolio.",
+      "got": "Investment grade corporate bonds must make up at least 40% of the portfolio.",
+      "status_code": 200,
+      "latency_sec": 0.5815880419977475,
+      "correct": true
+    },
+    {
+      "id": 5,
+      "prompt": "What is the permitted modified duration range for the portfolio?",
+      "expected": "Portfolio modified duration must stay between 2.0 and 6.5 years.",
+      "got": "Portfolio modified duration must stay between 2.0 and 6.5 years.",
+      "status_code": 200,
+      "latency_sec": 0.49076145800063387,
+      "correct": true
+    },
+    {
+      "id": 6,
+      "prompt": "What is the breach action if modified duration exceeds its limit?",
+      "expected": "The Chief Investment Officer must be notified within one business day and a remediation plan filed within five.",
+      "got": "The Chief Investment Officer must be notified within one business day and a remediation plan filed within five.",
+      "status_code": 200,
+      "latency_sec": 0.7415326670161448,
+      "correct": true
+    },
+    {
+      "id": 7,
+      "prompt": "What is the single-issuer concentration cap?",
+      "expected": "Exposure to any single issuer is capped at 5% of net asset value.",
+      "got": "Exposure to any single issuer is capped at 5% of net asset value.",
+      "status_code": 200,
+      "latency_sec": 0.5823295000009239,
+      "correct": true
+    },
+    {
+      "id": 8,
+      "prompt": "What is the issuer group concentration cap?",
+      "expected": "Aggregate exposure to any issuer group is capped at 10% of net asset value.",
+      "got": "Aggregate exposure to any issuer group is capped at 10% of net asset value.",
+      "status_code": 200,
+      "latency_sec": 0.6127294579928275,
+      "correct": true
+    },
+    {
+      "id": 9,
+      "prompt": "What is the liquidity floor for the Meridian Fixed Income Fund?",
+      "expected": "At least 10% of the portfolio must be held in cash or Singapore Treasury bills.",
+      "got": "At least 10% of the portfolio must be held in cash or Singapore Treasury bills.",
+      "status_code": 200,
+      "latency_sec": 0.6435142080008518,
+      "correct": true
+    },
+    {
+      "id": 10,
+      "prompt": "How often must the fund produce its regulatory compliance report?",
+      "expected": "The regulatory compliance report is produced quarterly.",
+      "got": "The regulatory compliance report is produced quarterly.",
+      "status_code": 200,
+      "latency_sec": 0.40007304202299565,
+      "correct": true
+    },
+    {
+      "id": 11,
+      "prompt": "What is the retention period for audit records?",
+      "expected": "All audit records must be retained for seven years.",
+      "got": "All audit records must be retained for seven years.",
+      "status_code": 200,
+      "latency_sec": 0.45974291700986214,
+      "correct": true
+    },
+    {
+      "id": 12,
+      "prompt": "Who owns the escalation of a limit breach?",
+      "expected": "The Chief Risk Officer owns breach escalation.",
+      "got": "The Chief Risk Officer owns breach escalation.",
+      "status_code": 200,
+      "latency_sec": 0.4769491250044666,
+      "correct": true
+    },
+    {
+      "id": 13,
+      "prompt": "What is the maximum allocation to structured credit?",
+      "expected": "Structured credit is capped at 10% of the fund's net asset value.",
+      "got": "Structured credit is capped at 10% of the fund's net asset value.",
+      "status_code": 200,
+      "latency_sec": 0.5533525840146467,
+      "correct": true
+    },
+    {
+      "id": 14,
+      "prompt": "What is the minimum weighted average credit rating of the portfolio?",
+      "expected": "The portfolio must maintain a weighted average credit rating of BBB or better.",
+      "got": "The portfolio must maintain a weighted average credit rating of BBB or better.",
+      "status_code": 200,
+      "latency_sec": 0.5864022500172723,
+      "correct": true
+    },
+    {
+      "id": 15,
+      "prompt": "What is the maximum unhedged non-SGD currency exposure?",
+      "expected": "Unhedged non-SGD currency exposure is capped at 15% of net asset value.",
+      "got": "Unhedged non-SGD currency exposure is capped at 15% of net asset value.",
+      "status_code": 200,
+      "latency_sec": 0.5578723330108915,
+      "correct": true
+    },
+    {
+      "id": 16,
+      "prompt": "How often are the fund's risk metrics monitored?",
+      "expected": "All risk metrics are monitored daily.",
+      "got": "All risk metrics are monitored daily.",
+      "status_code": 200,
+      "latency_sec": 0.3651911250199191,
+      "correct": true
+    },
+    {
+      "id": 17,
+      "prompt": "What benchmark does the Meridian Fixed Income Fund track?",
+      "expected": "The fund tracks the SGD Composite Bond Benchmark.",
+      "got": "The fund tracks the SGD Composite Bond Benchmark.",
+      "status_code": 200,
+      "latency_sec": 0.43341304099885747,
+      "correct": true
+    },
+    {
+      "id": 18,
+      "prompt": "Who is the custodian of the Meridian Fixed Income Fund?",
+      "expected": "Meridian Trust Services Pte Ltd acts as custodian of the fund.",
+      "got": "Meridian Trust Services Pte Ltd acts as custodian of the fund.",
+      "status_code": 200,
+      "latency_sec": 0.5216977089876309,
+      "correct": true
+    },
+    {
+      "id": 19,
+      "prompt": "In what year was the Meridian Fixed Income Fund launched?",
+      "expected": "The Meridian Fixed Income Fund was launched in 2018.",
+      "got": "The Meridian Fixed Income Fund was launched in 2018.",
+      "status_code": 200,
+      "latency_sec": 0.4540635420125909,
+      "correct": true
+    },
+    {
+      "id": 20,
+      "prompt": "How often is the fund's net asset value published?",
+      "expected": "The fund's net asset value is published daily.",
+      "got": "I cannot find the answer to this question in the provided context.",
+      "status_code": 200,
+      "latency_sec": 0.5473880000063218,
+      "correct": false
+    },
+    {
+      "id": 21,
+      "prompt": "What is the aggregate cap on non-investment-grade exposure?",
+      "expected": "Aggregate non-investment-grade exposure is capped at 20% of net asset value.",
+      "got": "Aggregate non-investment-grade exposure is capped at 20% of net asset value.",
+      "status_code": 200,
+      "latency_sec": 0.5257428750046529,
+      "correct": true
+    }
+  ]
+}

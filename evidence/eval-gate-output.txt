@@ -1,0 +1,34 @@
+=== Running Evaluation Gate ===
+python3 eval/eval_gate.py --url https://gateway.srzlab.tech --eval-set eval/eval_set.jsonl
+Starting evaluation gate against: https://gateway.srzlab.tech
+Loading evaluation dataset from eval/eval_set.jsonl...
+Running 21 test queries...
+  [1/21] QID 1: PASSED (0.61s)
+  [2/21] QID 2: PASSED (0.52s)
+  [3/21] QID 3: PASSED (0.58s)
+  [4/21] QID 4: PASSED (0.58s)
+  [5/21] QID 5: PASSED (0.49s)
+  [6/21] QID 6: PASSED (0.74s)
+  [7/21] QID 7: PASSED (0.58s)
+  [8/21] QID 8: PASSED (0.61s)
+  [9/21] QID 9: PASSED (0.64s)
+  [10/21] QID 10: PASSED (0.40s)
+  [11/21] QID 11: PASSED (0.46s)
+  [12/21] QID 12: PASSED (0.48s)
+  [13/21] QID 13: PASSED (0.55s)
+  [14/21] QID 14: PASSED (0.59s)
+  [15/21] QID 15: PASSED (0.56s)
+  [16/21] QID 16: PASSED (0.37s)
+  [17/21] QID 17: PASSED (0.43s)
+  [18/21] QID 18: PASSED (0.52s)
+  [19/21] QID 19: PASSED (0.45s)
+  [20/21] QID 20: FAILED (0.55s)
+    Prompt:   How often is the fund's net asset value published?
+    Expected: The fund's net asset value is published daily.
+    Got:      I cannot find the answer to this question in the provided context.
+  [21/21] QID 21: PASSED (0.53s)
+
+Evaluation Finished. Passed: 20/21 | Accuracy: 95.24%
+Evidence report saved to: evidence/rag_eval_results.json
+Failure: 1 queries failed or mismatch. Gate FAILED.
+make: *** [eval-gate] Error 1

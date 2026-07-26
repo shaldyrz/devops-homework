@@ -1,0 +1,11 @@
+=== Running Concurrency Load Test ===
+python3 loadgen/loadgen.py --url https://gateway.srzlab.tech --concurrency 8 --duration 30 --prompts eval/eval_set.jsonl
+target          https://gateway.srzlab.tech
+concurrency     8
+duration        30.5s
+requests        491 (0 errors, 0.0%)
+throughput      16.11 req/s
+latency p50     504 ms
+latency p95     682 ms
+latency p99     698 ms
+latency max     751 ms
