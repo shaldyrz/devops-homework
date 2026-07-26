@@ -11,6 +11,7 @@ import time
 import requests
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response
+from starlette.concurrency import run_in_threadpool
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
     Counter,
@@ -34,12 +35,14 @@ LATENCY = Histogram(
 
 
 @app.get("/healthz")
-async def healthz():
+def healthz():
     try:
-        upstream = requests.get(f"{MODEL_SERVER_URL}/healthz", timeout=2)
+        # Check downstream model server health
+        upstream = requests.get(f"{MODEL_SERVER_URL}/healthz", timeout=1.0)
         upstream_ok = upstream.status_code == 200
     except requests.RequestException:
         upstream_ok = False
+
     status = 200 if upstream_ok else 503
     return JSONResponse(
         {"status": "ok" if upstream_ok else "degraded", "model_server": upstream_ok},
@@ -58,8 +61,10 @@ async def chat_completions(request: Request):
     started = time.perf_counter()
     status = "200"
     try:
-        upstream = requests.post(
-            f"{MODEL_SERVER_URL}/v1/chat/completions", json=payload
+        upstream = await run_in_threadpool(
+            requests.post,
+            f"{MODEL_SERVER_URL}/v1/chat/completions",
+            json=payload
         )
         status = str(upstream.status_code)
         return JSONResponse(upstream.json(), status_code=upstream.status_code)

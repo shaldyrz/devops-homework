@@ -285,6 +285,55 @@
             "unit": "bytes"
           }
         }
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 24
+        },
+        "id": 7,
+        "title": "Pod Replicas (HPA Current vs Desired)",
+        "type": "timeseries",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "VictoriaMetrics"
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "VictoriaMetrics"
+            },
+            "editorMode": "code",
+            "expr": "sum(kube_horizontalpodautoscaler_status_current_replicas{namespace=\"development\"}) by (horizontalpodautoscaler)",
+            "legendFormat": "{{horizontalpodautoscaler}} - Current Replicas",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "VictoriaMetrics"
+            },
+            "editorMode": "code",
+            "expr": "sum(kube_horizontalpodautoscaler_status_desired_replicas{namespace=\"development\"}) by (horizontalpodautoscaler)",
+            "legendFormat": "{{horizontalpodautoscaler}} - Desired Replicas",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "stepAfter"
+            },
+            "unit": "short"
+          }
+        }
       }
     ],
     "refresh": "5s",
@@ -311,6 +360,6 @@
     },
     "timezone": "browser",
     "title": "Meridian Services Dashboard",
-    "version": 1
+    "version": 2
   }
 }

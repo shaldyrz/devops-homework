@@ -6,6 +6,7 @@ import logging
 import requests
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
+from starlette.concurrency import run_in_threadpool
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
     Counter,
@@ -159,7 +160,8 @@ async def chat_completions(request: Request):
 
         # Forward request to mock inference server
         try:
-            upstream_response = requests.post(
+            upstream_response = await run_in_threadpool(
+                requests.post,
                 f"{MODEL_SERVER_URL}/v1/chat/completions",
                 json=payload,
                 headers={"Content-Type": "application/json"}

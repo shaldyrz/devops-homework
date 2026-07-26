@@ -60,6 +60,34 @@ prometheus.scrape "metrics" {
   forward_to = [prometheus.remote_write.vm.receiver]
 }
 
+// Discover all GKE nodes in the cluster
+discovery.kubernetes "nodes" {
+  role = "node"
+}
+
+// Relabel to point to the cAdvisor metrics path
+discovery.relabel "cadvisor" {
+  targets = discovery.kubernetes.nodes.targets
+  
+  rule {
+    replacement  = "/metrics/cadvisor"
+    target_label = "__metrics_path__"
+  }
+}
+
+// Scrape cAdvisor metrics from the Kubelet
+prometheus.scrape "cadvisor" {
+  targets    = discovery.relabel.cadvisor.output
+  forward_to = [prometheus.remote_write.vm.receiver]
+  
+  scheme = "https"
+  bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+  
+  tls_config {
+    insecure_skip_verify = true
+  }
+}
+
 // Remote write to local Victoria Metrics Single
 prometheus.remote_write "vm" {
   endpoint {

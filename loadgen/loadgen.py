@@ -84,7 +84,7 @@ async def main() -> None:
     deadline = time.perf_counter() + args.duration
 
     started = time.perf_counter()
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(verify=False) as client:
         await asyncio.gather(
             *[
                 worker(client, args.url, prompts, deadline, latencies, errors, counter)
@@ -106,6 +106,11 @@ async def main() -> None:
         print(f"latency p95     {percentile(ordered, 0.95) * 1000:.0f} ms")
         print(f"latency p99     {percentile(ordered, 0.99) * 1000:.0f} ms")
         print(f"latency max     {ordered[-1] * 1000:.0f} ms")
+    if errors:
+        from collections import Counter
+        print("errors breakdown:")
+        for err, count in Counter(errors).most_common():
+            print(f"  {err}: {count}")
 
 
 if __name__ == "__main__":
