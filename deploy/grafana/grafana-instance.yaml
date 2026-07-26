@@ -15,15 +15,26 @@ spec:
       admin_user: admin
       admin_password: prom-operator
   ingress:
-    enabled: true
-    ingressClassName: external-ingress
-    hostname: grafana.srzlab.tech
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-srzlab-tech
-    tls:
-      - secretName: grafana-tls
-        hosts:
-          - grafana.srzlab.tech
+    metadata:
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-srzlab-tech
+    spec:
+      ingressClassName: external-ingress
+      rules:
+        - host: grafana.srzlab.tech
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: grafana-instance-service
+                    port:
+                      number: 3000
+      tls:
+        - secretName: grafana-tls
+          hosts:
+            - grafana.srzlab.tech
   deployment:
     spec:
       template:
