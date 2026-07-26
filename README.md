@@ -131,7 +131,8 @@ Results are saved to `evidence/rag_eval_results.json`.
 | URL | Description |
 |-----|-------------|
 | `https://gateway.srzlab.tech` | Gateway API |
-| `https://grafana.srzlab.tech` | Grafana |
+| `https://grafana.srzlab.tech` | Grafana dashboards (admin / prom-operator) |
+| `https://argocd.srzlab.tech` | ArgoCD GitOps dashboard |
 
 ---
 
