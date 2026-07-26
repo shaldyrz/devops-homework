@@ -71,21 +71,21 @@ resource "google_container_cluster" "primary" {
 
 # Cost-optimized GKE Spot Node Pool (1 node total in a single zone)
 resource "google_container_node_pool" "spot_nodes" {
-  name       = "spot-node-pool"
-  location   = var.zone
-  cluster    = google_container_cluster.primary.name
-  
+  name     = "spot-node-pool"
+  location = var.zone
+  cluster  = google_container_cluster.primary.name
+
   initial_node_count = 1
 
   autoscaling {
     min_node_count = 1
-    max_node_count = 3
+    max_node_count = 5
   }
 
   node_config {
     spot         = true
     machine_type = "e2-medium"
-    
+
     disk_type    = "pd-standard"
     disk_size_gb = 30
 
