@@ -4,9 +4,10 @@ kind: Kustomization
 namespace: development
 
 resources:
-  - deployment.yaml
-  - service.yaml
+- deployment.yaml
+- service.yaml
 
 images:
-  - name: asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway
-    newTag: placeholder
+- name: asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway
+  newName: asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway
+  newTag: f30f8b774e418ab5e945f08e3aa9575e7bd67dc2
