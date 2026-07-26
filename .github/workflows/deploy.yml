@@ -1,0 +1,77 @@
+name: Deploy Microservices
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'services/**'
+      - 'deploy/**'
+      - '.github/workflows/deploy.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker asia-southeast2-docker.pkg.dev --quiet
+
+      - name: Build and Push Gateway Image
+        run: |
+          docker build -t asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway:${{ github.sha }} ./services/gateway
+          docker push asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway:${{ github.sha }}
+
+      - name: Build and Push Model Server Image
+        run: |
+          docker build -t asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server:${{ github.sha }} ./services/model-server
+          docker push asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server:${{ github.sha }}
+
+      - name: Build and Push RAG API Image (If Implemented)
+        run: |
+          if [ -f ./services/rag-api/Dockerfile ]; then
+            docker build -t asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api:${{ github.sha }} ./services/rag-api
+            docker push asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api:${{ github.sha }}
+          else
+            echo "rag-api Dockerfile not found, skipping build."
+          fi
+
+      - name: Set up Kustomize
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          sudo mv kustomize /usr/local/bin/
+
+      - name: Update Kustomize Image Tags
+        run: |
+          cd deploy/gateway
+          kustomize edit set image asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway=asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway:${{ github.sha }}
+          
+          cd ../model-server
+          kustomize edit set image asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server=asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server:${{ github.sha }}
+
+          if [ -f ../../services/rag-api/Dockerfile ]; then
+            cd ../rag-api
+            kustomize edit set image asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api=asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api:${{ github.sha }}
+          fi
+
+      - name: Commit and Push Kustomize Updates
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout ${{ github.ref_name }}
+          git add deploy/
+          git diff-index --quiet HEAD || (git commit -m "ci: update image tags to ${{ github.sha }} [skip ci]" && git push origin ${{ github.ref_name }})

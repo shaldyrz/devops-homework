@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: development
+
+resources:
+  - deployment.yaml
+  - service.yaml
+
+images:
+  - name: asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server
+    newTag: placeholder
