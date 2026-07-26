@@ -11,4 +11,4 @@ resources:
 images:
 - name: asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api
   newName: asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api
-  newTag: eb6a57bfdc5d61e386001e76c1300f925cc994ab
+  newTag: cf2c113
