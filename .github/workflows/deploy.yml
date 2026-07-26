@@ -19,6 +19,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Set Short SHA
+        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -33,19 +36,19 @@ jobs:
 
       - name: Build and Push Gateway Image
         run: |
-          docker build -t asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway:${{ github.sha }} ./services/gateway
-          docker push asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway:${{ github.sha }}
+          docker build -t asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway:${{ env.SHORT_SHA }} ./services/gateway
+          docker push asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway:${{ env.SHORT_SHA }}
 
       - name: Build and Push Model Server Image
         run: |
-          docker build -t asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server:${{ github.sha }} ./services/model-server
-          docker push asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server:${{ github.sha }}
+          docker build -t asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server:${{ env.SHORT_SHA }} ./services/model-server
+          docker push asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server:${{ env.SHORT_SHA }}
 
       - name: Build and Push RAG API Image (If Implemented)
         run: |
           if [ -f ./services/rag-api/Dockerfile ]; then
-            docker build -t asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api:${{ github.sha }} -f services/rag-api/Dockerfile .
-            docker push asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api:${{ github.sha }}
+            docker build -t asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api:${{ env.SHORT_SHA }} -f services/rag-api/Dockerfile .
+            docker push asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api:${{ env.SHORT_SHA }}
           else
             echo "rag-api Dockerfile not found, skipping build."
           fi
@@ -58,14 +61,14 @@ jobs:
       - name: Update Kustomize Image Tags
         run: |
           cd deploy/gateway
-          kustomize edit set image asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway=asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway:${{ github.sha }}
+          kustomize edit set image asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway=asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/gateway:${{ env.SHORT_SHA }}
           
           cd ../model-server
-          kustomize edit set image asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server=asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server:${{ github.sha }}
+          kustomize edit set image asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server=asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server:${{ env.SHORT_SHA }}
 
           if [ -f ../../services/rag-api/Dockerfile ]; then
             cd ../rag-api
-            kustomize edit set image asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api=asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api:${{ github.sha }}
+            kustomize edit set image asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api=asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/rag-api:${{ env.SHORT_SHA }}
           fi
 
       - name: Commit and Push Kustomize Updates
@@ -74,4 +77,4 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git checkout ${{ github.ref_name }}
           git add deploy/
-          git diff-index --quiet HEAD || (git commit -m "ci: update image tags to ${{ github.sha }} [skip ci]" && git push origin ${{ github.ref_name }})
+          git diff-index --quiet HEAD || (git commit -m "ci: update image tags to ${{ env.SHORT_SHA }} [skip ci]" && git push origin ${{ github.ref_name }})

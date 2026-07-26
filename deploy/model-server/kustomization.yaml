@@ -6,6 +6,7 @@ namespace: development
 resources:
 - deployment.yaml
 - service.yaml
+- hpa.yaml
 
 images:
 - name: asia-southeast2-docker.pkg.dev/ambient-stone-281407/interopera/model-server
