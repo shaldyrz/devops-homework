@@ -34,6 +34,56 @@ The system is deployed on Google Kubernetes Engine (GKE) as a private zonal clus
 └─────────────────────────────────────────────────────────────┘
 ```
 
+### Interactive Architecture Flow
+
+```mermaid
+graph TD
+    classDef client fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef ingress fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+    classDef app fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef storage fill:#ffe0b2,stroke:#f57c00,stroke-width:2px;
+    classDef monitoring fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+
+    Internet(["Internet / Client"]) -->|https://gateway.srzlab.tech| Ingress[("Nginx Ingress Controller")]
+    Internet -->|https://argocd.srzlab.tech| Ingress
+    Internet -->|https://grafana.srzlab.tech| Ingress
+
+    subgraph "GKE Cluster (asia-southeast2-a)"
+        Ingress -->|Route /v1/chat/completions| Gateway
+        Ingress -->|Route to UI| ArgoCD["ArgoCD Server<br/>(argocd namespace)"]
+        Ingress -->|Route to Dashboards| Grafana["Grafana Server<br/>(monitoring namespace)"]
+
+        subgraph "development namespace (Trust Boundary)"
+            Gateway["Gateway Service<br/>(Port: 8000)"]
+            RagAPI["RAG API Service<br/>(Port: 8080)"]
+            ModelServer["Model Server (SLM)<br/>(Port: 8001)"]
+            Corpus[("Bundled Corpus Data<br/>(corpus/ folder)")]
+        end
+
+        subgraph "monitoring namespace"
+            VM["Victoria Metrics"]
+            VMAgent["Alloy / VM Agent (Scraper)"]
+        end
+    end
+
+    %% Internal Data Flows
+    Gateway -->|Forward completion request| RagAPI
+    RagAPI -.->|1. Retrieve vector context| Corpus
+    RagAPI -->|2. Forward Grounded Prompt| ModelServer
+
+    %% Monitoring Connections
+    VMAgent -.->|Scrape /metrics| Gateway
+    VMAgent -.->|Scrape /metrics| ModelServer
+    VMAgent -->|Write TSDB| VM
+    Grafana -->|Query Metrics| VM
+
+    class Internet client;
+    class Ingress ingress;
+    class Gateway,RagAPI,ModelServer app;
+    class Corpus storage;
+    class VM,VMAgent,Grafana,ArgoCD monitoring;
+```
+
 ### Trust Boundary & Exposure Controls
 * **Public-Facing Zone**: The **Ingress Controller** and **Gateway** are the only components facing the internet. The Ingress Class (`external-ingress`) restricts incoming traffic to secure domain paths (`gateway.srzlab.tech`).
 * **Private-Only Zone**: The `rag-api` and the `model-server` are deployed as internal `ClusterIP` services. They have no Ingress resources.
